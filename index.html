@@ -17,6 +17,7 @@
             display: flex;
             flex-direction: column;
             gap: 16px;
+            align-items: flex-start;
         }
         .preview {
             border: 2px dashed #ccc;
@@ -26,28 +27,44 @@
             background-position: top left;
             background-size: auto;
         }
+        .brake {
+            border: none;
+            height: 1px;
+            background-color: #cbcbcb;
+            width: 600px;
+        }
     </style>
 </head>
 <body>
     <div class="wrapper">
         <div>
             <input type="file" id="imageInput" accept="image/*" />
-            <select id="repeatMode">
-                <option value="repeat">repeat</option>
-                <option value="no-repeat">no-repeat</option>
-                <option value="repeat-x">repeat-x</option>
-                <option value="repeat-y">repeat-y</option>
-            </select>
         </div>
         <div class="wrapper">
             <div>
+                <span>Repeat mode</span>
+                <select id="repeatMode">
+                    <option value="repeat">repeat</option>
+                    <option value="no-repeat">no-repeat</option>
+                    <option value="repeat-x">repeat-x</option>
+                    <option value="repeat-y">repeat-y</option>
+                </select>
+            </div>
+            <hr class="brake">
+            <div>
+                <span>Height</span>
                 <input id="width" type="number" value="600"/>
+            </div>
+            <div>
+                <span>Width</span>
                 <input id="height" type="number" value="600"/>
             </div>
+            <hr class="brake">
             <div class="wrapper" style="width: 600px;">
                 <div>Rotate: <span id="rotateValue">0</span></div>
                 <input type="range" id="rotateRange" min="0" max="270" step="90" value="0">
             </div>
+            <hr class="brake">
             <span>Repeated pattern</span>
             <div id="preview" class="preview"></div>
         </div>
