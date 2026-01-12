@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <!-- iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Pattern tester">
+
+    <!-- Иконка для iOS -->
+<!--    <link rel="apple-touch-icon" href="/icons/icon-180.png">-->
+
+    <title>Pattern tester</title>
+    <style>
+        .wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .preview {
+            border: 2px dashed #ccc;
+            height: 600px;
+            width: 600px;
+            background-repeat: repeat;
+            background-position: top left;
+            background-size: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div>
+            <input type="file" id="imageInput" accept="image/*" />
+            <select id="repeatMode">
+                <option value="repeat">repeat</option>
+                <option value="no-repeat">no-repeat</option>
+                <option value="repeat-x">repeat-x</option>
+                <option value="repeat-y">repeat-y</option>
+            </select>
+        </div>
+        <div class="wrapper">
+            <div>
+                <input id="width" type="number" value="600"/>
+                <input id="height" type="number" value="600"/>
+            </div>
+            <div class="wrapper" style="width: 600px;">
+                <div>Rotate: <span id="rotateValue">0</span></div>
+                <input type="range" id="rotateRange" min="0" max="270" step="90" value="0">
+            </div>
+            <span>Repeated pattern</span>
+            <div id="preview" class="preview"></div>
+        </div>
+    </div>
+
+    <script>
+        const input = document.getElementById('imageInput');
+        const preview = document.getElementById('preview');
+        const repeatSelect = document.getElementById('repeatMode');
+        const width = document.getElementById('width');
+        const height = document.getElementById('height');
+        const rotateRange = document.getElementById('rotateRange');
+        const rotateValue = document.getElementById('rotateValue');
+
+        width.addEventListener('change', () => {
+            preview.style.width = width.value + 'px';
+        });
+        height.addEventListener('change', () => {
+            preview.style.height = height.value + 'px';
+        });
+
+        repeatSelect.addEventListener('change', () => {
+            preview.style.backgroundRepeat = repeatSelect.value;
+        });
+
+        rotateRange.addEventListener('input', () => {
+            rotateValue.textContent = rotateRange.value;
+            preview.style.rotate = rotateRange.value + 'deg';
+        });
+
+        input.addEventListener('change', () => {
+            const file = input.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = () => {
+                preview.style.backgroundImage = `url(${reader.result})`;
+            };
+            reader.readAsDataURL(file);
+        });
+    </script>
+</body>
