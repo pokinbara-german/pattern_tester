@@ -134,7 +134,7 @@
         scaleRange.addEventListener('input', () => {
             if (!fitPreview) {
                 scaleValue.textContent = scaleRange.value;
-                preview.style.scale = scaleRange.value;
+                scaleWrapper.style.scale = scaleRange.value;
             }
         });
 
@@ -156,8 +156,13 @@
                 const scale = String(Math.min((viewport.width - 20) / size, 1));
 
                 scaleWrapper.style.scale = scale;
-                scaleValue.textContent = parseFloat(scale).toFixed(2);
-                scaleRange.value = parseFloat(scale).toFixed(2);
+                if (scale !== '1') {
+                    scaleValue.textContent = parseFloat(scale).toFixed(2);
+                    scaleRange.value = parseFloat(scale).toFixed(2);
+                } else {
+                    scaleValue.textContent = scale;
+                    scaleRange.value = scale;
+                }
             } else {
                 scaleWrapper.style.scale = '1';
                 scaleValue.textContent = '1';
