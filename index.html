@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -19,6 +19,9 @@
             gap: 16px;
             align-items: flex-start;
         }
+        .preview_wrapper {
+            width: -webkit-fill-available;
+        }
         .preview {
             border: 2px dashed #ccc;
             height: 600px;
@@ -26,12 +29,22 @@
             background-repeat: repeat;
             background-position: top left;
             background-size: auto;
+            transform-origin: top left;
         }
         .brake {
             border: none;
             height: 1px;
             background-color: #cbcbcb;
             width: 600px;
+        }
+        .scale-wrapper {
+            transform-origin: top left;
+            transform: scale(1);
+        }
+
+        .rotate-box {
+            transform-origin: center;
+            transform: rotate(0deg);
         }
     </style>
 </head>
@@ -52,12 +65,8 @@
             </div>
             <hr class="brake">
             <div>
-                <span>Height</span>
-                <input id="width" type="number" value="600"/>
-            </div>
-            <div>
-                <span>Width</span>
-                <input id="height" type="number" value="600"/>
+                <span>Dimensions (px)</span>
+                <input id="dimensions" type="number" value="600"/>
             </div>
             <hr class="brake">
             <div class="wrapper" style="width: 600px;">
@@ -65,25 +74,52 @@
                 <input type="range" id="rotateRange" min="0" max="270" step="90" value="0">
             </div>
             <hr class="brake">
+            <div class="wrapper" style="width: 600px;">
+                <div>Scale: <span id="scaleValue">1</span></div>
+                <input type="range" id="scaleRange" min="0.1" max="3" step="0.1" value="1" disabled>
+                <div>
+                    <input id="fit" type="checkbox" checked/>
+                    <span>Set scale to fit page</span>
+                </div>
+            </div>
+            <hr class="brake">
+        </div>
+        <div class="wrapper preview_wrapper">
             <span>Repeated pattern</span>
-            <div id="preview" class="preview"></div>
+            <div id="scale" class="scale-wrapper">
+                <div id="rotate" class="rotate-box">
+                    <div id="preview" class="preview"></div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        const input = document.getElementById('imageInput');
+        const imageInput = document.getElementById('imageInput');
         const preview = document.getElementById('preview');
         const repeatSelect = document.getElementById('repeatMode');
-        const width = document.getElementById('width');
-        const height = document.getElementById('height');
+        const dimensions = document.getElementById('dimensions');
         const rotateRange = document.getElementById('rotateRange');
         const rotateValue = document.getElementById('rotateValue');
+        const scaleRange = document.getElementById('scaleRange');
+        const scaleValue = document.getElementById('scaleValue');
+        const scaleWrapper = document.getElementById('scale');
+        const rotateWrapper = document.getElementById('rotate');
+        const fit = document.getElementById('fit');
 
-        width.addEventListener('change', () => {
-            preview.style.width = width.value + 'px';
+        let fitPreview = true;
+
+        dimensions.addEventListener('change', () => {
+            const size = dimensions.value;
+            preview.style.width = size + 'px';
+            preview.style.height = size + 'px';
+            scalePreview();
         });
-        height.addEventListener('change', () => {
-            preview.style.height = height.value + 'px';
+
+        fit.addEventListener('change', () => {
+            fitPreview = fit.checked;
+            scaleRange.disabled = fitPreview;
+            scalePreview();
         });
 
         repeatSelect.addEventListener('change', () => {
@@ -92,11 +128,18 @@
 
         rotateRange.addEventListener('input', () => {
             rotateValue.textContent = rotateRange.value;
-            preview.style.rotate = rotateRange.value + 'deg';
+            rotateWrapper.style.rotate = rotateRange.value + 'deg';
         });
 
-        input.addEventListener('change', () => {
-            const file = input.files[0];
+        scaleRange.addEventListener('input', () => {
+            if (!fitPreview) {
+                scaleValue.textContent = scaleRange.value;
+                preview.style.scale = scaleRange.value;
+            }
+        });
+
+        imageInput.addEventListener('change', () => {
+            const file = imageInput.files[0];
             if (!file) return;
 
             const reader = new FileReader();
@@ -105,5 +148,21 @@
             };
             reader.readAsDataURL(file);
         });
+
+        function scalePreview() {
+            if (fitPreview) {
+                const viewport = window.visualViewport;
+                const size = dimensions.value;
+                const scale = String(Math.min((viewport.width - 20) / size, 1));
+
+                scaleWrapper.style.scale = scale;
+                scaleValue.textContent = parseFloat(scale).toFixed(2);
+                scaleRange.value = parseFloat(scale).toFixed(2);
+            } else {
+                scaleWrapper.style.scale = '1';
+                scaleValue.textContent = '1';
+                scaleRange.value = '1';
+            }
+        }
     </script>
 </body>
